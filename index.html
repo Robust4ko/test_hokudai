@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>津波避難シミュレーション</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            background-color: #00bfff;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 1.2em;
+            margin: 0;
+        }
+
+        header .subtext {
+            font-size: 0.8em;
+            margin-top: 4px;
+            color: #f0f8ff;
+        }
+
+        footer {
+            background-color: white;
+            color: gray;
+            text-align: center;
+            padding: 4px;
+            font-size: 0.6em;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            height: calc(100% - 80px); /* header + footer */
+        }
+
+        .map-area {
+            flex: 2;
+            background-color: #f0f0f0;
+        }
+
+        .info-area {
+            flex: 1;
+            background-color: #e0e0e0;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .button-row button {
+            flex: 1;
+            font-size: 0.95em;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+        }
+
+        button.use-location {
+            background-color: #007bff;
+        }
+
+        button.use-location:hover {
+            background-color: #005fcc;
+        }
+
+        button.launch-gmap {
+            background-color: #28a745;
+        }
+
+        button.launch-gmap:hover {
+            background-color: #218838;
+        }
+
+        #nearest-destination {
+            margin-top: 10px;
+            font-size: 0.95em;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1em;
+            }
+
+            header .subtext {
+                font-size: 0.75em;
+            }
+
+            .container {
+                flex-direction: column;
+                height: 100vh;
+            }
+
+            .map-area {
+                height: 68vh;
+            }
+
+            .info-area {
+                height: 24vh;
+                max-height: 24vh;
+                padding: 8px;
+                font-size: 0.85em;
+                overflow: hidden;
+            }
+
+            .info-area .button-row {
+                flex-wrap: nowrap;
+                gap: 6px;
+            }
+
+            .info-area p, .info-area h2 {
+                margin: 0;
+                line-height: 1.2;
+            }
+
+            footer {
+                padding: 3px;
+                font-size: 0.6em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>津波避難シミュレーション</h1>
+        <p class="subtext">📍 地図をクリックすると避難経路を表示します</p>
+    </header>
+
+    <div class="container">
+        <div class="map-area" id="map"></div>
+        <div class="info-area">
+            <div>
+                <h2 style="margin: 0; font-size: 1em;">最短の避難先：</h2>
+                <p id="nearest-destination">クリックして確認してください</p>
+            </div>
+            <div class="button-row">
+                <button class="use-location" onclick="useCurrentLocation()">現在地から避難</button>
+                <button class="launch-gmap" onclick="launchGoogleMap()">Googleマップ</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        都市地域デザイン学研究室
+    </footer>
+
+    <script async defer 
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDHARZBVr3rzCr_ejyqvMVxoU-V9VfKnfw&language=ja&callback=initMap">
+    </script>
+    <script src="./map_eva.js"></script>
+</body>
+</html>
