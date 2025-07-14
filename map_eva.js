@@ -9,8 +9,7 @@
  5. コマンドプロンプトで、「コントロール＋C」でサーバー停止（コマンドプロンプトを閉じれば停止される）
 */
 
-// 追加：グローバル変数宣言
-// 改修済み map_eva.js（時間表示付き）
+// 改修済み map_eva.js + GASログ送信機能付き
 
 let map;
 let directionsService;
@@ -20,12 +19,39 @@ let startMarker = null;
 let destinations = [];
 let latestDestination = null;
 
+// GASエンドポイント
+const LOG_ENDPOINT = "https://script.google.com/macros/s/AKfycbwPZEjG7MXEc1cC9Oe-J1JDSHOUwqwepXBHCAdXImnPUhSsBjkfOX0naOs_uyAlkHx_/exec";
+
+// ローカルID生成・保存
+let userId = localStorage.getItem('user_id');
+if (!userId) {
+    userId = 'user_' + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem('user_id', userId);
+}
+
+function logUserEvent(action, detail = {}) {
+    const payload = {
+        timestamp: new Date().toISOString(),
+        user_id: userId,
+        action: action,
+        detail: detail,
+        device: navigator.userAgent,
+        screen: `${window.innerWidth}x${window.innerHeight}`
+    };
+
+    fetch(LOG_ENDPOINT, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json" }
+    });
+}
+
 function displayMessage(message) {
     document.getElementById("nearest-destination").textContent = message;
 }
 
 function initMap() {
-    const center = { lat:43.07565682432503, lng: 141.3406940653519 }; //43.07565682432503, 141.3406940653519
+    const center = { lat:43.07565682432503, lng: 141.3406940653519 };
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: 15,
         center: center
@@ -51,6 +77,7 @@ function initMap() {
 
     map.addListener('click', function(event) {
         setStartPoint(event.latLng);
+        logUserEvent("map_click", { lat: event.latLng.lat(), lng: event.latLng.lng() });
     });
 }
 
@@ -194,6 +221,7 @@ function launchGoogleMap() {
         return;
     }
     const origin = startMarker.getPosition();
+    logUserEvent("gmap_opened", { destination: latestDestination.name });
     openInGoogleMaps(
         { lat: origin.lat(), lng: origin.lng() },
         latestDestination.location
@@ -209,6 +237,10 @@ function useCurrentLocation() {
                     position.coords.longitude
                 );
                 setStartPoint(latLng);
+                logUserEvent("use_location_clicked", {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                });
             },
             function(error) {
                 displayMessage("現在地の取得に失敗しました: " + error.message);
@@ -225,3 +257,4 @@ function useCurrentLocation() {
 }
 
 window.initMap = initMap;
+
