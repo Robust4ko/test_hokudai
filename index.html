@@ -15,18 +15,18 @@
         header {
             background-color: #00bfff;
             color: white;
-            padding: 6px; /* ← 縮小 */
+            padding: 6px;
             text-align: center;
         }
 
         header h1 {
-            font-size: 1.1em; /* ← 少し小さく */
+            font-size: 1.1em;
             margin: 0;
         }
 
         header .subtext {
             font-size: 0.75em;
-            margin-top: 2px; /* ← 間隔縮小 */
+            margin-top: 2px;
             color: #f0f8ff;
         }
 
@@ -39,37 +39,54 @@
             position: fixed;
             width: 100%;
             bottom: 0;
+            z-index: 8;
         }
 
         .container {
+            height: 100vh;
             display: flex;
-            flex-direction: row;
-            height: calc(100% - 80px); /* PC向け残し */
+            flex-direction: column;
         }
 
         .map-area {
-            flex: 2;
-            background-color: #f0f0f0;
-        }
-
-        .info-area {
-            flex: 1;
-            background-color: #e0e0e0;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start; /* ← 中央寄せから上寄せに変更 */
+            flex-grow: 1;
+            position: relative;
         }
 
         #map {
-            height: 100%;
-            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .info-area {
+            position: fixed;
+            bottom: 24px; /* フッターの上に配置 */
+            width: 100vw;
+            box-sizing: border-box;
+            background-color: #e0e0e0;
+            padding: 8px 12px;
+            font-size: 0.85em;
+            z-index: 9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* ← 追加！ */
+        }
+
+        .info-area h2 {
+            font-size: 1em;
+            margin: 0;
+        }
+
+        #nearest-destination {
+            margin-top: 4px;
+            font-size: 0.95em;
         }
 
         .button-row {
             display: flex;
             gap: 10px;
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
         .button-row button {
@@ -80,6 +97,7 @@
             border-radius: 6px;
             color: white;
             cursor: pointer;
+            white-space: nowrap;
         }
 
         button.use-location {
@@ -98,11 +116,6 @@
             background-color: #218838;
         }
 
-        #nearest-destination {
-            margin-top: 10px;
-            font-size: 0.95em;
-        }
-
         @media (max-width: 768px) {
             header h1 {
                 font-size: 1em;
@@ -113,37 +126,14 @@
                 margin-top: 2px;
             }
 
-            .container {
-                flex-direction: column;
-                height: 100vh; /* ← スマホ用フル画面 */
-            }
-
-            .map-area {
-                height: 65vh; /* ← 地図エリアを少し縮小 */
-            }
-
             .info-area {
-                height: 24vh;
-                max-height: 24vh;
-                padding: 8px;
                 font-size: 0.85em;
-                overflow: hidden;
-                justify-content: flex-start; /* ← 中央寄せを上寄せに変更 */
+                padding: 8px 12px;
+                width: 100vw;
             }
 
-            .info-area .button-row {
-                flex-wrap: nowrap;
+            .button-row {
                 gap: 6px;
-            }
-
-            .info-area p, .info-area h2 {
-                margin: 0;
-                line-height: 1.2;
-            }
-
-            footer {
-                padding: 3px;
-                font-size: 0.6em;
             }
         }
     </style>
@@ -155,12 +145,12 @@
     </header>
 
     <div class="container">
-        <div class="map-area" id="map"></div>
+        <div class="map-area">
+            <div id="map"></div>
+        </div>
         <div class="info-area">
-            <div>
-                <h2 style="margin: 0; font-size: 1em;">最短の避難先：</h2>
-                <p id="nearest-destination">クリックして確認してください</p>
-            </div>
+            <h2>最短の避難先：</h2>
+            <p id="nearest-destination">クリックして確認してください</p>
             <div class="button-row">
                 <button class="use-location" onclick="useCurrentLocation()">現在地から避難</button>
                 <button class="launch-gmap" onclick="launchGoogleMap()">Googleマップ</button>
