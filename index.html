@@ -15,18 +15,18 @@
         header {
             background-color: #00bfff;
             color: white;
-            padding: 10px;
+            padding: 6px; /* ← 縮小 */
             text-align: center;
         }
 
         header h1 {
-            font-size: 1.2em;
+            font-size: 1.1em; /* ← 少し小さく */
             margin: 0;
         }
 
         header .subtext {
-            font-size: 0.8em;
-            margin-top: 4px;
+            font-size: 0.75em;
+            margin-top: 2px; /* ← 間隔縮小 */
             color: #f0f8ff;
         }
 
@@ -34,7 +34,7 @@
             background-color: white;
             color: gray;
             text-align: center;
-            padding: 4px;
+            padding: 3px;
             font-size: 0.6em;
             position: fixed;
             width: 100%;
@@ -44,7 +44,7 @@
         .container {
             display: flex;
             flex-direction: row;
-            height: calc(100% - 80px); /* header + footer */
+            height: calc(100% - 80px); /* PC向け残し */
         }
 
         .map-area {
@@ -58,7 +58,7 @@
             padding: 12px;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* ← 上寄せに変更 */
+            justify-content: flex-start; /* ← 中央寄せから上寄せに変更 */
         }
 
         #map {
@@ -109,16 +109,17 @@
             }
 
             header .subtext {
-                font-size: 0.75em;
+                font-size: 0.7em;
+                margin-top: 2px;
             }
 
             .container {
                 flex-direction: column;
-                height: 100vh;
+                height: 100vh; /* ← スマホ用フル画面 */
             }
 
             .map-area {
-                height: 68vh;
+                height: 65vh; /* ← 地図エリアを少し縮小 */
             }
 
             .info-area {
@@ -127,6 +128,7 @@
                 padding: 8px;
                 font-size: 0.85em;
                 overflow: hidden;
+                justify-content: flex-start; /* ← 中央寄せを上寄せに変更 */
             }
 
             .info-area .button-row {
