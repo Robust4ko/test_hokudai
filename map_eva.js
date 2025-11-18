@@ -110,6 +110,31 @@ function displayMessage(message) {
   if (el) el.textContent = message;
 }
 
+// === 状態ラベル制御（現在地 / 検索中 / トラッキング中） ===
+function setCurrentButtonStatusLabel(state) {
+  const el = document.getElementById('btn-current-status');
+  if (!el) return;
+
+  // 多言語を考慮（index.html 側で setAppLanguage が呼ばれる前提） 
+  const isJa = (APP_LANG === 'ja');
+  const TXT = {
+    idle:      isJa ? '現在地'     : 'Current location',
+    searching: isJa ? '検索中'     : 'Searching…',
+    tracking:  isJa ? 'トラッキング' : 'Tracking',
+  };
+
+  el.textContent = (state === 'searching')
+    ? TXT.searching
+    : (state === 'tracking')
+      ? TXT.tracking
+      : TXT.idle;
+}
+
+// 言語切替時にも現在の状態でラベルを再描画できるよう公開（任意）
+window.refreshCurrentStatusLabel = function(){
+  setCurrentButtonStatusLabel(tracking ? 'tracking' : 'idle');
+};
+
 // ===== HTMLエスケープ（XSS簡易対策）=====
 function escapeHtml(str) {
   return String(str)
@@ -644,6 +669,9 @@ function initCurrentButton() {
   let pressTimer = null;
   let longPressed = false;
 
+  // 初期表示：通常時
+  setCurrentButtonStatusLabel('idle');
+
   const clearTimer = () => {
     if (pressTimer) {
       clearTimeout(pressTimer);
@@ -660,10 +688,12 @@ function initCurrentButton() {
       if (!tracking) {
         startTracking();
         btn.classList.add('active');   // 追跡中は水色のまま
+        setCurrentButtonStatusLabel('tracking'); // ← 追加
         displayMessage(T('trackingOn') || "現在位置の追跡を開始しました。");
       } else {
         stopTracking();
         btn.classList.remove('active');
+        setCurrentButtonStatusLabel('idle');     // ← 追加
         displayMessage(T('trackingOff') || "現在位置の追跡を停止しました。");
       }
     }, LONG_PRESS_MS);
@@ -673,8 +703,13 @@ function initCurrentButton() {
     // 短押し（タップ）の場合のみ、現在位置へズーム＋一瞬光る
     if (!longPressed) {
       btn.classList.add('flash');      // CSSアニメーションで一瞬水色
+      setCurrentButtonStatusLabel('searching');
       locateOnce(true);                // 現在位置にズーム
-      setTimeout(() => btn.classList.remove('flash'), 600);
+      setTimeout(() => {
+        btn.classList.remove('flash');
+        // 追跡中でなければ「現在地」に戻す
+        setCurrentButtonStatusLabel(tracking ? 'tracking' : 'idle'); // ← 追加
+      }, 600);
     }
     clearTimer();
   };
